@@ -1,0 +1,43 @@
+name: Swift Test
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        default: 'ubuntu-latest'
+        required: false
+        type: string
+      swift-version:
+        required: true
+        type: string
+      xcode-version:
+        required: false
+        type: string
+    secrets:
+      APPLE_ID:
+        required: false
+      APPLE_ID_PASSWORD:
+        required: false
+
+jobs:
+  swift-test:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: sinoru/actions-setup-xcode@v2
+        if: ${{ startsWith(inputs.runs-on, 'macos') && inputs.xcode-version != '' }}
+        with:
+          xcode-version: ${{ inputs.xcode-version }}
+          apple-id: ${{ secrets.APPLE_ID }}
+          apple-id-password: ${{ secrets.APPLE_ID_PASSWORD }}
+      - uses: sinoru/actions-setup-swift@v2
+        with:
+          swift-version: ${{ inputs.swift-version }}
+      - name: Build
+        run: swift build
+        env:
+          SWIFT_VERSION: ${{ inputs.swift-version }}
+      - name: Run tests
+        run: swift test
+        env:
+          SWIFT_VERSION: ${{ inputs.swift-version }}

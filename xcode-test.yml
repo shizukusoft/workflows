@@ -1,0 +1,40 @@
+name: Xcode Test
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        default: 'macos-latest'
+        required: false
+        type: string
+      xcode-version:
+        required: false
+        type: string
+      scheme:
+        required: true
+        type: string
+      xcode-destination:
+        required: true
+        type: string
+    secrets:
+      APPLE_ID:
+        required: false
+      APPLE_ID_PASSWORD:
+        required: false
+
+jobs:
+  xcode-test:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: sinoru/actions-setup-xcode@v2
+        with:
+          xcode-version: ${{ inputs.xcode-version }}
+          apple-id: ${{ secrets.APPLE_ID }}
+          apple-id-password: ${{ secrets.APPLE_ID_PASSWORD }}
+      - name: Resolve Package Dependencies
+        run: xcodebuild -resolvePackageDependencies
+      - name: Analyze
+        run: xcodebuild -scheme '${{ inputs.scheme }}' -destination '${{ inputs.xcode-destination }}' analyze
+      - name: Test
+        run: xcodebuild -scheme '${{ inputs.scheme }}' -destination '${{ inputs.xcode-destination }}' test
