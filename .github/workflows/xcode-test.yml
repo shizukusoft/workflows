@@ -10,7 +10,7 @@ on:
       xcode-version:
         required: false
         type: string
-      scheme:
+      xcode-scheme:
         required: true
         type: string
       xcode-destination:
@@ -35,6 +35,6 @@ jobs:
       - name: Resolve Package Dependencies
         run: xcodebuild -resolvePackageDependencies
       - name: Analyze
-        run: xcodebuild -scheme '${{ inputs.scheme }}' -destination '${{ inputs.xcode-destination }}' analyze
+        run: xcodebuild -scheme '${{ inputs.xcode-scheme }}' -destination '${{ inputs.xcode-destination }}' analyze
       - name: Test
-        run: xcodebuild -scheme '${{ inputs.scheme }}' -destination '${{ inputs.xcode-destination }}' test
+        run: xcodebuild -scheme '${{ inputs.xcode-scheme }}' -destination '${{ inputs.xcode-destination }}' test
